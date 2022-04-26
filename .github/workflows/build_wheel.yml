@@ -1,6 +1,10 @@
 name: Build AFDKO Win32 Python Wheel
 
 on:
+  push:
+    tags:
+      - '\d+\.\d+\.[0-9a-z]+'
+
   workflow_dispatch:
 
 jobs:
@@ -14,11 +18,11 @@ jobs:
     steps:
 
     - name: Get Latest Tag
-      id: latesttag
       uses: oprypin/find-latest-tag@v1
         with:
           repository: adobe-type-tools/afdko
           releases-only: true
+      id: latesttag
       run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
 
     - name: Check Out
