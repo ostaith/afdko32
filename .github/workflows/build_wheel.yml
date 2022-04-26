@@ -13,15 +13,6 @@ jobs:
 
     steps:
 
-    - name: Get Latest Tag
-      id: latesttag
-      uses: oprypin/find-latest-tag@v1
-      with:
-        repository: adobe-type-tools/afdko
-        releases-only: true
-
-    - run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
-
     - name: Check Out
       uses: actions/checkout@v2
       with:
@@ -56,6 +47,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Get Latest Tag
+      id: latesttag
+      uses: oprypin/find-latest-tag@v1
+      with:
+        repository: adobe-type-tools/afdko
+        releases-only: true
+
+    - run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
 
     - name: Create Tag
       uses: rickstaa/action-create-tag@v1
