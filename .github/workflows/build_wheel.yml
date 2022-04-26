@@ -23,7 +23,8 @@ jobs:
       with:
         repository: adobe-type-tools/afdko
         releases-only: true
-      run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
+
+    - run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
 
     - name: Check Out
       uses: actions/checkout@v2
