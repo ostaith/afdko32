@@ -18,11 +18,11 @@ jobs:
     steps:
 
     - name: Get Latest Tag
-      uses: oprypin/find-latest-tag@v1
-        with:
-          repository: adobe-type-tools/afdko
-          releases-only: true
       id: latesttag
+      uses: oprypin/find-latest-tag@v1
+      with:
+        repository: adobe-type-tools/afdko
+        releases-only: true
       run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
 
     - name: Check Out
