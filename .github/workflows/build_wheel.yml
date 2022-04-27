@@ -5,87 +5,24 @@ on:
 
 jobs:
   build_wheel:
-    name: Build Py3 Wheel on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2019]
-
-    steps:
-
-    - name: Check Out
-      uses: actions/checkout@v2
-      with:
-        repository: adobe-type-tools/afdko
-        fetch-depth: 0  # unshallow fetch for setuptools-scm
-
-    - name: Install Python 3.9
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-        architecture: x86
-
-    - name: Build Wheel
-      uses: pypa/cibuildwheel@v2.3.1
-      with:
-        output-dir: dist
-      env:
-        CIBW_BUILD: "cp39-*"
-        CIBW_ARCHS_WINDOWS: x86
-
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheelstorage
-        path: ./dist/*
-        if-no-files-found: error
-        retention-days: 30
-
-  publish_release:
-    name: Publish Release
-    needs: build_wheel
+    name: Build Py3 Wheel on Windows
     runs-on: ubuntu-latest
 
     steps:
 
-    - name: Get Latest Tag
-      id: latesttag
-      uses: oprypin/find-latest-tag@v1
+    - name: Get Latest Release
+      id: latestrelease
+      uses: kaliber5/action-get-release@v1
       with:
-        repository: adobe-type-tools/afdko
-        releases-only: true
-
-    - run: echo "AFDKO is at version ${{ steps.latesttag.outputs.tag }}"
-
-    - uses: actions/checkout@v3
-    - name: Create Tag
-      uses: rickstaa/action-create-tag@v1
-      with:
-        tag: ${{ steps.latesttag.outputs.tag }}
-
-    - name: Get date & flat tag
-      id: date_tag
-      run: |
-        export DATE=$(TZ=US/Pacific date +'%Y-%m-%d')
-        echo $DATE
-        export FLAT_TAG=$(echo ${{ steps.latesttag.outputs.tag }} | sed 's/\.//g')
-        echo $FLAT_TAG
-        echo ::set-output name=TODAY::$DATE
-        echo ::set-output name=VERSION::$FLAT_TAG
-      shell: bash
-
-    - name: Download Release Assets
-      uses: actions/download-artifact@v2
-      with:
-        name: wheelstorage
-        path: dist
-
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+        token: ${{ github.token }}
+        owner: adobe-type-tools
+        repo: afdko
+        latest: true
+        
+    - name: Example of consumption of the output
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        body: '[Release Notes](https://github.com/adobe-type-tools/afdko/blob/develop/NEWS.md#${{ steps.date_tag.outputs.VERSION }}-released-${{ steps.date_tag.outputs.TODAY }})'
-        prerelease: false
-        tag_name: ${{ steps.latesttag.outputs.tag }}
-        files: ./dist/*
+        TAGNAME: ${{ steps.latestrelease.outputs.tag_name }}
+        CREATEDAT: ${{ steps.latestrelease.outputs.created_at }}
+        PUBLISHEDAT: ${{ steps.latestrelease.outputs.published_at }}
+      run: |
+        echo "tag_name: $TAGNAME, created_at: $CREATEDAT, published_at: $PUBLISHEDAT"
