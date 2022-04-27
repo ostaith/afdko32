@@ -46,7 +46,7 @@ jobs:
     steps:
 
     - name: Get Latest Release
-      id: latestrelease
+      id: latest
       uses: kaliber5/action-get-release@v1
       with:
         token: ${{ github.token }}
@@ -55,20 +55,20 @@ jobs:
         latest: true
 
     - run: |
-        echo "AFDKO is at version: ${{ steps.latestrelease.outputs.tag_name }}, publish at: ${{ steps.latestrelease.outputs.published_at }}"
+        echo "AFDKO is at version: ${{ steps.latest.outputs.tag_name }}, publish at: ${{ steps.latest.outputs.published_at }}"
 
     - uses: actions/checkout@v3
     - name: Create Tag
       uses: rickstaa/action-create-tag@v1
       with:
-        tag: ${{ steps.latestrelease.outputs.tag }}
+        tag: ${{ steps.latest.outputs.tag_name }}
 
     - name: Get date & flat tag
       id: date_tag
       run: |
-        export DATE=$(echo ${{steps.latestrelease.outputs.published_at}} | cut -c1-10)
+        export DATE=$(echo ${{steps.latest.outputs.published_at}} | cut -c1-10)
         echo $DATE
-        export FLAT_TAG=$(echo ${{ steps.latestrelease.outputs.tag_name }} | sed 's/\.//g')
+        export FLAT_TAG=$(echo ${{ steps.latest.outputs.tag_name }} | sed 's/\.//g')
         echo $FLAT_TAG
         echo ::set-output name=TODAY::$DATE
         echo ::set-output name=VERSION::$FLAT_TAG
@@ -87,5 +87,5 @@ jobs:
       with:
         body: '[Release Notes](https://github.com/adobe-type-tools/afdko/blob/develop/NEWS.md#${{ steps.date_tag.outputs.VERSION }}-released-${{ steps.date_tag.outputs.TODAY }})'
         prerelease: false
-        tag_name: ${{ steps.latestrelease.outputs.tag }}
+        tag_name: ${{ steps.latest.outputs.tag_name }}
         files: ./dist/*
