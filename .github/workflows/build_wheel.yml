@@ -22,7 +22,7 @@ jobs:
     - name: Example of consumption of the output
       env:
         TAGNAME: ${{ steps.latestrelease.outputs.tag_name }}
-        CREATEDAT: ${{ steps.latestrelease.outputs.created_at }}
-        PUBLISHEDAT: ${{ steps.latestrelease.outputs.published_at }}
+        CREATEDAT: $(${{ steps.latestrelease.outputs.created_at }}:0:10)
+        PUBLISHEDAT: $(${{ steps.latestrelease.outputs.published_at }}:0:10)
       run: |
         echo "tag_name: $TAGNAME, created_at: $CREATEDAT, published_at: $PUBLISHEDAT"
