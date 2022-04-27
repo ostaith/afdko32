@@ -18,11 +18,19 @@ jobs:
         owner: adobe-type-tools
         repo: afdko
         latest: true
-        
-    - name: Example of consumption of the output
-      env:
-        TAGNAME: ${{ steps.latestrelease.outputs.tag_name }}
-        CREATEDAT: $(echo ${{steps.latestrelease.outputs.created_at}} | cut -c 1-10)
-        PUBLISHEDAT: $(echo ${{steps.latestrelease.outputs.published_at}} | cut -c 1-10)
+
+    - run: |
+        echo "AFDKO is at version: ${{ steps.latestrelease.outputs.tag_name }}, publish at: ${{ steps.latestrelease.outputs.published_at }}"
+
+    - name: Get date & flat tag
+      id: date_tag
       run: |
-        echo "tag_name: $TAGNAME, created_at: $CREATEDAT, published_at: $PUBLISHEDAT"
+        export DATE=$(echo ${{steps.latestrelease.outputs.published_at}} | cut -c1-10)
+        echo $DATE
+        export FLAT_TAG=$(echo ${{ steps.latestrelease.outputs.tag_name }} | sed 's/\.//g')
+        echo $FLAT_TAG
+        echo ::set-output name=TODAY::$DATE
+        echo ::set-output name=VERSION::$FLAT_TAG
+      shell: bash
+      
+    - run: echo ${{ steps.date_tag.outputs.VERSION }}, echo ${{ steps.date_tag.outputs.TODAY }}
